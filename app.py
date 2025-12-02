@@ -1,5 +1,22 @@
 import streamlit as st
+import os
 
+############################# CONFIGURACIÓN INICIAL ##############################
+
+# Configuración global para todas las páginas
+st.set_page_config(page_title="Detección de Fraude | ISIL", layout="wide")
+
+# Rutas de las imágenes
+# Asegúrate de que esta ruta sea correcta en tu repositorio de GitHub.
+# Asumo que la imagen 'ISIL.jpg' está en la raíz del repositorio.
+ISIL_LOGO_PATH = "ISIL.jpg"
+
+try:
+    # Intenta cargar la imagen del logo en la barra lateral
+    st.sidebar.image(ISIL_LOGO_PATH, caption="Actividad #1 | Contenido del Curso")
+except FileNotFoundError:
+    # Mensaje de error si la imagen no se encuentra en el repositorio
+    st.sidebar.error("Error: Archivo 'ISIL.jpg' no encontrado en el repositorio. Asegúrate de subirlo.")
 #############################Pagina 1############################## 
 
 st.sidebar.image("ISIL.jpg", caption="Actividad #1 | Contenido del Curso")
