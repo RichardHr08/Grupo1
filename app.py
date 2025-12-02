@@ -140,9 +140,9 @@ def page3():
   st.title("Pendiente")
   
 page_names_to_funcs = {
-  "Introducciòn": page1,
-  "Modelos": page2,
-  "Grupo 03": page3
+  "Introducción": page1,
+  "Timelime": page2,
+  "Modelos": page3
 
   }
 
