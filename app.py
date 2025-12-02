@@ -151,7 +151,7 @@ page_names_to_funcs = {
   "Introducción": page1,
   "Timelime": page2,
   "Modelos": page3
-"Modelos": page3
+  "Modelos": page3
   }
 
   
