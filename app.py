@@ -1,22 +1,33 @@
 import streamlit as st
 import os
 
+
 ############################# CONFIGURACIÓN INICIAL ##############################
 
 # Configuración global para todas las páginas
 st.set_page_config(page_title="Detección de Fraude | ISIL", layout="wide")
 
 # Rutas de las imágenes
-# Asegúrate de que esta ruta sea correcta en tu repositorio de GitHub.
-# Asumo que la imagen 'ISIL.jpg' está en la raíz del repositorio.
-ISIL_LOGO_PATH = "ISIL.jpg"
+# Intenta cargar la imagen del logo. Primero busca en la raíz, luego en una carpeta 'assets'.
+# DEBES subir el archivo 'ISIL.png' a la ubicación correcta en tu repositorio de GitHub.
+ISIL_LOGO_PATHS = ["ISIL.png", "assets/ISIL.png", "images/ISIL.png"]
+loaded = False
 
-try:
-    # Intenta cargar la imagen del logo en la barra lateral
-    st.sidebar.image(ISIL_LOGO_PATH, caption="Actividad #1 | Contenido del Curso")
-except FileNotFoundError:
-    # Mensaje de error si la imagen no se encuentra en el repositorio
-    st.sidebar.error("Error: Archivo 'ISIL.jpg' no encontrado en el repositorio. Asegúrate de subirlo.")
+for path in ISIL_LOGO_PATHS:
+    try:
+        # Intenta cargar la imagen del logo en la barra lateral
+        st.sidebar.image(path, caption="Actividad #1 | Contenido del Curso")
+        loaded = True
+        break
+    except FileNotFoundError:
+        continue
+
+if not loaded:
+    # Mensaje de error si la imagen no se encuentra después de todos los intentos
+    st.sidebar.error(
+        f"Error: Archivo 'ISIL.png' no encontrado. Asegúrate de subirlo a la raíz, '/assets/' o '/images/' en tu repositorio."
+    )
+
 #############################Pagina 1############################## 
 
 st.sidebar.image("ISIL.jpg", caption="Actividad #1 | Contenido del Curso")
