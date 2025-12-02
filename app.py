@@ -44,7 +44,7 @@ def page1():
  
 
  st.title("Detección de Transacciones Fraudulentas")
-  st.markdown("---")
+st.markdown("---")
   
   # --- INTRODUCCIÓN MODIFICADA ---
   st.write("## La Frontera Digital de la Seguridad Financiera") 
