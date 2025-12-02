@@ -16,7 +16,12 @@ loaded = False
 for path in ISIL_LOGO_PATHS:
     try:
         # Intenta cargar la imagen del logo en la barra lateral
-        st.sidebar.image(path, caption="Actividad #1 | Contenido del Curso")
+        st.sidebar.image(path, caption="Grupo #1")
+        st.sidebar.image(path, caption="Integrantes:")
+        st.sidebar.image(path, caption="Herwuin Huaman:")
+         st.sidebar.image(path, caption="Adrian Ticona:")
+         st.sidebar.image(path, caption="Brenda Sanches:")
+         st.sidebar.image(path, caption="Gerson Manosalva:")
         loaded = True
         break
     except FileNotFoundError:
@@ -30,8 +35,11 @@ if not loaded:
 
 #############################Pagina 1############################## 
 
+def page1():
+  st.title("Pendiente")
 
-def page1(): 
+#############################Pagina 2############################## 
+def page2(): 
   st.set_page_config(page_title="Detección de Fraude | ISIL", layout="wide") 
   
   st.title("Detección de Transacciones Fraudulentas | Línea de Tiempo de Hitos Clave")
@@ -128,22 +136,22 @@ def page1():
       # Figura clave destacada
       st.markdown(f"**🛡️ Actores Clave:** *{data_hito['figura_clave']}*")
 
-############################# Pagina 2 ############################## 
+############################# Pagina 3 ############################## 
 
-def page2():
+def page3():
   st.title("Pendiente")
 
 
-############################# Pagina 2 ############################## 
+############################# Pagina 4 ############################## 
 
-def page3():
+def page4():
   st.title("Pendiente")
   
 page_names_to_funcs = {
   "Introducción": page1,
   "Timelime": page2,
   "Modelos": page3
-
+"Modelos": page3
   }
 
   
