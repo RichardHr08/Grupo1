@@ -30,7 +30,6 @@ if not loaded:
 
 #############################Pagina 1############################## 
 
-st.sidebar.image("ISIL.jpg", caption="Actividad #1 | Contenido del Curso")
 
 def page1(): 
   st.set_page_config(page_title="Detección de Fraude | ISIL", layout="wide") 
