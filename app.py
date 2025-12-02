@@ -106,6 +106,11 @@ def page2():
   st.title("Pendiente")
 
 
+############################# Pagina 2 ############################## 
+
+def page3():
+  st.title("Pendiente")
+  
 page_names_to_funcs = {
   "Grupo 01": page1,
   "Grupo 02": page2,
