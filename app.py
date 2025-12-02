@@ -18,10 +18,10 @@ for path in ISIL_LOGO_PATHS:
         # Intenta cargar la imagen del logo en la barra lateral
         st.sidebar.image(path, caption="Grupo #1")
         st.sidebar.image(path, caption="Integrantes:")
-        st.sidebar.image(path, caption="Herwuin Huaman:")
-         st.sidebar.image(path, caption="Adrian Ticona:")
-         st.sidebar.image(path, caption="Brenda Sanches:")
-         st.sidebar.image(path, caption="Gerson Manosalva:")
+        st.sidebar.image(path, caption="Herwuin Huaman")
+        st.sidebar.image(path, caption="Adrian Ticona")
+        st.sidebar.image(path, caption="Brenda Sanches")
+        st.sidebar.image(path, caption="Gerson Manosalva")
         loaded = True
         break
     except FileNotFoundError:
