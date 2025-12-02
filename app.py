@@ -1,4 +1,4 @@
-mport streamlit as st
+import streamlit as st
 
 ##############
 #st.sidebar.image("imagenes/logo_isil_principal.jpg", caption="Actividad #1 | Contenido del Curso")
