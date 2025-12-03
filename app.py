@@ -46,9 +46,9 @@ def page1():
  st.title("Detección de Transacciones Fraudulentas")
 st.markdown("---")
   
-  # --- INTRODUCCIÓN MODIFICADA ---
-  st.write("## La Frontera Digital de la Seguridad Financiera") 
-  st.markdown("""
+ # --- INTRODUCCIÓN MODIFICADA (AHORA CORRECTAMENTE INDENTADA) ---
+    st.write("## La Frontera Digital de la Seguridad Financiera") 
+    st.markdown("""
     En la era del comercio electrónico y la banca digital, la **Detección de Operaciones Fraudulentas** se ha convertido en una disciplina crítica para proteger tanto a las instituciones financieras como a los consumidores. 
     Este proyecto explora la evolución de los sistemas antifraude, desde los primeros modelos estadísticos basados en reglas fijas hasta la aplicación actual de la Inteligencia Artificial y el Aprendizaje Profundo (Deep Learning). 
     Analizaremos cómo los hitos tecnológicos han redefinido la batalla contra el crimen financiero, permitiendo la identificación de patrones de riesgo sutiles y la prevención en tiempo real.
