@@ -335,6 +335,10 @@ def page3():
         
     except Exception as e:
         st.warning(f"No se pudo generar el Diagrama de Pares. Asegúrate de tener las columnas correctas. (Excepción: {e})")
+        
+ st.markdown("---")
+    st.write("Para el procesamiento de los datos la columna Timestamp se debe convertir en tipo de datos fecha ademas los tipo object en numerico de ser necesario.")
+
 
 def page4():
     st.title("Modelos de Machine Learning 🤖")
