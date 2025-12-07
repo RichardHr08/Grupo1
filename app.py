@@ -155,43 +155,124 @@ def page3():
     st.title("Análisis Exploratorio de Datos (EDA) 🔍")
     st.markdown("---")
 
-    # 🔑 CORRECCIÓN CLAVE: Llama a load_data() aquí para definir df localmente
+    # 🔑 CARGA DE DATOS: Llama a load_data() para definir df localmente
     df = load_data() 
     
     if df.empty:
         # Se detiene si la carga falla
         return
-
-    # --- 1. ESTRUCTURA Y RESUMEN ---
-    st.header("1. Estructura y Resumen del Dataset")
-    col_shape, col_info = st.columns(2)
-    
-    with col_shape:
-        st.subheader("Dimensiones")
-        st.info(f"**Filas (Observaciones):** {df.shape[0]:,}")
-        st.info(f"**Columns (Features):** {df.shape[1]:,}")
-        st.markdown("---")
-        st.subheader("Primeras 5 Filas")
-        st.dataframe(df.head())
-
-    with col_info:
-        st.subheader("Tipos de Datos y Nulos")
-        buffer = pd.io.common.StringIO()
-        df.info(buf=buffer)
-        s = buffer.getvalue()
-        st.text(s)
         
-        null_counts = df.isnull().sum()
-        if null_counts.sum() > 0:
-            st.error("⚠️ Se detectaron valores nulos. Requiere limpieza.")
-            st.dataframe(null_counts[null_counts > 0].to_frame('Valores Nulos'))
-        else:
-            st.success("✅ ¡No se detectaron valores nulos!")
+    # --- ANÁLISIS DEL DATASET ---
+
+    st.header("1. Información General del Dataset")
+    
+    # 1.1 Dimensiones y Target
+    col_dim, col_target, col_types = st.columns(3)
+
+    with col_dim:
+        st.subheader("Dimensiones")
+        # Cuántas filas y columnas tiene?
+        st.info(f"**Filas (Observaciones):** {df.shape[0]:,}")
+        st.info(f"**Columnas (Features):** {df.shape[1]:,}")
+
+    with col_target:
+        # Cuál es el target?
+        st.subheader("Variable Target")
+        st.success("🎯 **'Fraud_Label'**")
+        st.write("Es una variable binaria: `1` (Fraude), `0` (No Fraude).")
+
+    with col_types:
+        # 1.2 Tipos de Datos
+        st.subheader("Tipos de Datos")
+        # Qué tipos de datos son?
+        st.dataframe(df.dtypes.to_frame(name='Tipo de Dato'))
+
+    st.markdown("---")
+    
+    # 1.3 Datos Faltantes
+    st.header("2. Calidad de Datos (Valores Faltantes)")
+    # Hay datos faltantes?
+    null_counts = df.isnull().sum().sort_values(ascending=False)
+    null_counts = null_counts[null_counts > 0]
+    
+    if null_counts.sum() > 0:
+        st.error("⚠️ Se detectaron valores nulos. Requiere limpieza.")
+        st.dataframe(null_counts.to_frame('Valores Nulos'))
+    else:
+        st.success("✅ ¡No se detectaron valores nulos en el dataset!")
 
     st.markdown("---")
 
-    # --- 2. ANÁLISIS DE LA VARIABLE OBJETIVO ---
-    st.header("2. Análisis de la Variable Objetivo (`Fraud_Label`)")
+    # --- 3. ANÁLISIS DE OUTLIERS (DATOS FUERA DE SERIE) ---
+    st.header("3. Detección de Outliers (Datos Fuera de Serie)")
+    st.write("Se utiliza el método del **Rango Intercuartílico (IQR)** para identificar transacciones atípicas.")
+
+    # 1. Identificar columnas numéricas (excluyendo la binaria Fraud_Label y posiblemente Step/ID si son tratadas como índices)
+    num_cols = df.select_dtypes(include=['float64', 'int64']).columns.tolist()
+    # Excluir etiquetas binarias o IDs que no tienen sentido buscar outliers
+    cols_to_exclude = ['Fraud_Label', 'IP_Address_Flag', 'Previous_Fraudulent_Activity', 'CustomerID', 'TransactionID']
+    num_cols = [col for col in num_cols if col not in cols_to_exclude]
+    
+    st.info(f"Analizando las columnas: {', '.join(num_cols)}")
+
+    # 2. Función para encontrar outliers por IQR
+    def detectar_outliers_iqr(data_frame, col):
+        Q1 = data_frame[col].quantile(0.25)
+        Q3 = data_frame[col].quantile(0.75)
+        IQR = Q3 - Q1
+        lower = Q1 - 1.5 * IQR
+        upper = Q3 + 1.5 * IQR
+        return data_frame[(data_frame[col] < lower) | (data_frame[col] > upper)]
+
+    # 3. Detectar outliers en cada columna numérica
+    outliers_total = pd.DataFrame()
+    outlier_summary = {}
+
+    for col in num_cols:
+        outliers_col = detectar_outliers_iqr(df, col)
+        if not outliers_col.empty:
+            outliers_total = pd.concat([outliers_total, outliers_col])
+            outlier_summary[col] = outliers_col.shape[0]
+
+    # Presentar resultados
+    if not outliers_total.empty:
+        total_outliers = outliers_total.drop_duplicates().shape[0]
+        st.warning(f"🚨 **Outliers Detectados:** Se encontraron **{total_outliers}** filas con valores fuera de serie.")
+        
+        st.subheader("Resumen de Outliers por Columna")
+        st.dataframe(pd.Series(outlier_summary).to_frame('Cantidad de Outliers'))
+        
+        # Mostrar el boxplot de las columnas con outliers para visualización
+        st.subheader("Visualización de Outliers (Boxplots)")
+        cols_with_outliers = list(outlier_summary.keys())
+        
+        num_plots = len(cols_with_outliers)
+        
+        # Ajustamos el tamaño de la figura automáticamente
+        fig, axes = plt.subplots(ncols=1, nrows=num_plots, figsize=(8, 4 * num_plots))
+        
+        # Manejar el caso de un solo gráfico
+        if num_plots == 1:
+            axes = [axes]
+
+        for i, col in enumerate(cols_with_outliers):
+            sns.boxplot(x=df[col], ax=axes[i], color='#3498DB')
+            axes[i].set_title(f'Outliers en {col}')
+            
+        plt.tight_layout()
+        st.pyplot(fig)
+        
+
+[Image of a boxplot showing outliers for numerical data]
+
+        
+    else:
+        st.success("✅ No se detectaron outliers significativos mediante el método IQR en las columnas seleccionadas.")
+
+    st.markdown("---")
+
+    # --- 4. ANÁLISIS DE LA VARIABLE OBJETIVO --- (Sección movida a 4)
+    st.header("4. Análisis de la Variable Objetivo (`Fraud_Label`)")
     st.write("En la detección de fraude, es crucial analizar el **desbalance** de la clase.")
 
     col_count, col_dist = st.columns(2)
@@ -219,8 +300,8 @@ def page3():
 
     st.markdown("---")
 
-    # --- 3. MATRIZ DE CORRELACIÓN ---
-    st.header("3. Matriz de Correlación")
+    # --- 5. MATRIZ DE CORRELACIÓN --- (Sección movida a 5)
+    st.header("5. Matriz de Correlación")
     st.write("Identifica las relaciones entre variables numéricas y su impacto en el fraude.")
 
     numerical_df = df.select_dtypes(include=np.number)
@@ -230,9 +311,6 @@ def page3():
     sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap='coolwarm', ax=ax, linewidths=.5, linecolor='black')
     ax.set_title('Matriz de Correlación de Variables')
     st.pyplot(fig)
-    
-
-    st.markdown("---")
 
     # --- 4. DIAGRAMA DE PARES (PAIRPLOT) ---
     st.header("4. Diagrama de Pares (Pairplot) 📊")
