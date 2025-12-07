@@ -171,7 +171,6 @@ def page3():
 
     with col_dim:
         st.subheader("Dimensiones")
-        # Cuántas filas y columnas tiene?
         st.info(f"**Filas (Observaciones):** {df.shape[0]:,}")
         st.info(f"**Columnas (Features):** {df.shape[1]:,}")
 
@@ -261,17 +260,14 @@ def page3():
             
         plt.tight_layout()
         st.pyplot(fig)
-        
-
-[Image of a boxplot showing outliers for numerical data]
-
+        #  <- ESTABA AQUÍ Y LO COMENTO
         
     else:
         st.success("✅ No se detectaron outliers significativos mediante el método IQR en las columnas seleccionadas.")
 
     st.markdown("---")
 
-    # --- 4. ANÁLISIS DE LA VARIABLE OBJETIVO --- (Sección movida a 4)
+    # --- 4. ANÁLISIS DE LA VARIABLE OBJETIVO ---
     st.header("4. Análisis de la Variable Objetivo (`Fraud_Label`)")
     st.write("En la detección de fraude, es crucial analizar el **desbalance** de la clase.")
 
@@ -300,7 +296,7 @@ def page3():
 
     st.markdown("---")
 
-    # --- 5. MATRIZ DE CORRELACIÓN --- (Sección movida a 5)
+    # --- 5. MATRIZ DE CORRELACIÓN ---
     st.header("5. Matriz de Correlación")
     st.write("Identifica las relaciones entre variables numéricas y su impacto en el fraude.")
 
@@ -311,42 +307,7 @@ def page3():
     sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap='coolwarm', ax=ax, linewidths=.5, linecolor='black')
     ax.set_title('Matriz de Correlación de Variables')
     st.pyplot(fig)
-
-    # --- 4. DIAGRAMA DE PARES (PAIRPLOT) ---
-    st.header("4. Diagrama de Pares (Pairplot) 📊")
-    st.write("Visualiza la relación bivariada entre las principales variables numéricas. Los puntos están coloreados por la etiqueta de fraude, mostrando si existe una **separación lineal**.")
-
-    # 🔑 Lógica para seleccionar las variables clave para el Pairplot
-    # 1. Obtenemos solo las columnas numéricas
-    numerical_cols = df.select_dtypes(include=np.number).columns.tolist()
-    
-    # 2. Excluimos la etiqueta target y las IDs si existen
-    features_to_plot = [col for col in numerical_cols if col not in ['Fraud_Label', 'CustomerID', 'TransactionID', 'Step']]
-    
-    # 3. Limitamos el número de variables (ej. las 5 primeras) por rendimiento
-    features_subset = features_to_plot[:5]
-    
-    # 4. Creamos el DataFrame final incluyendo la etiqueta de fraude
-    df_pairplot = df[features_subset + ['Fraud_Label']]
-
-    # 5. Creamos el Pairplot
-    try:
-        # El hue='Fraud_Label' es la clave para la detección de fraude
-        fig_pairplot = sns.pairplot(
-            df_pairplot, 
-            hue='Fraud_Label', 
-            diag_kind='kde', # Muestra la densidad en la diagonal
-            palette=['green', 'red']
-        )
-        # Ajuste para evitar que el título se solape con el Streamlit header
-        plt.suptitle("Relación Bivariada y Distribución (Fraude vs. No Fraude)", y=1.02) 
-        
-        # Mostramos el gráfico
-        st.pyplot(fig_pairplot)
-        
-
-    except Exception as e:
-        st.warning(f"No se pudo generar el Pairplot. Asegúrate de tener suficientes variables numéricas (Excepción: {e})")
+    #  <- ESTABA AQUÍ Y LO COMENTO    
 
 def page4():
     st.title("Modelos de Machine Learning 🤖")
