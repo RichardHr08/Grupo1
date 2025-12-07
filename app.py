@@ -165,10 +165,14 @@ def page3():
     st.title("Análisis Exploratorio de Datos (EDA) 🔍")
     st.markdown("---")
 
+    # LLAMAR A LA FUNCIÓN DE CARGA DENTRO DE LA PÁGINA
+    df = load_data() 
+    
     if df.empty:
         st.warning("No se pudo cargar el dataset. Por favor, verifica la URL en GitHub.")
         return
 
+    # Resto del código EDA...
     st.header("1. Estructura y Resumen del Dataset")
 
     col_shape, col_info = st.columns(2)
@@ -177,9 +181,7 @@ def page3():
         st.subheader("Dimensiones")
         st.info(f"**Filas (Observaciones):** {df.shape[0]:,}")
         st.info(f"**Columnas (Features):** {df.shape[1]:,}")
-        st.markdown("---")
-        st.subheader("Primeras 5 Filas")
-        st.dataframe(df.head())
+        # ... (continúa el resto de tu EDA con df)
 
     with col_info:
         st.subheader("Tipos de Datos y Nulos")
