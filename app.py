@@ -38,7 +38,6 @@ if not loaded:
         f"Error: Archivo 'ISIL.png' no encontrado. Asegúrate de subirlo a la raíz, '/assets/' o '/images/' en tu repositorio."
     )
 
-#############################Pagina 1############################## 
 
 ############################# Pagina 1 ############################## 
 def page1():
@@ -163,7 +162,84 @@ def page2():
 ############################# Pagina 3 ############################## 
 
 def page3():
-  st.title("Pendiente")
+    st.title("Análisis Exploratorio de Datos (EDA) 🔍")
+    st.markdown("---")
+
+    if df.empty:
+        st.warning("No se pudo cargar el dataset. Por favor, verifica la URL en GitHub.")
+        return
+
+    st.header("1. Estructura y Resumen del Dataset")
+
+    col_shape, col_info = st.columns(2)
+    
+    with col_shape:
+        st.subheader("Dimensiones")
+        st.info(f"**Filas (Observaciones):** {df.shape[0]:,}")
+        st.info(f"**Columnas (Features):** {df.shape[1]:,}")
+        st.markdown("---")
+        st.subheader("Primeras 5 Filas")
+        st.dataframe(df.head())
+
+    with col_info:
+        st.subheader("Tipos de Datos y Nulos")
+        buffer = pd.io.common.StringIO()
+        df.info(buf=buffer)
+        s = buffer.getvalue()
+        st.text(s)
+        
+        # Verificación de valores nulos
+        null_counts = df.isnull().sum()
+        if null_counts.sum() > 0:
+            st.error("⚠️ Se detectaron valores nulos. Requiere limpieza.")
+            st.dataframe(null_counts[null_counts > 0].to_frame('Valores Nulos'))
+        else:
+            st.success("✅ ¡No se detectaron valores nulos!")
+
+    st.markdown("---")
+
+    st.header("2. Análisis de la Variable Objetivo (`Fraud_Label`)")
+    st.write("En la detección de fraude, es crucial analizar el desbalance de la clase.")
+
+    col_count, col_dist = st.columns(2)
+    
+    with col_count:
+        st.subheader("Recuento de Clases")
+        value_counts = df["Fraud_Label"].value_counts().rename({0: "No Fraude", 1: "Fraude"})
+        st.dataframe(value_counts.to_frame())
+        
+        # Calcular y mostrar el ratio
+        total = df.shape[0]
+        fraude_count = value_counts.loc["Fraude"]
+        fraude_ratio = (fraude_count / total) * 100
+        
+        st.warning(f"🚨 **Ratio de Fraude:** Solo el **{fraude_ratio:.2f}%** de las transacciones son fraudulentas. Esto es un problema de **Desbalance de Clases**.")
+
+    with col_dist:
+        st.subheader("Visualización de Desbalance")
+        fig, ax = plt.subplots()
+        sns.countplot(x='Fraud_Label', data=df, ax=ax, palette=['#4CAF50', '#FF5722'])
+        ax.set_title("Distribución de Transacciones (0=No Fraude, 1=Fraude)")
+        ax.set_xlabel("Fraud_Label")
+        ax.set_ylabel("Frecuencia")
+        st.pyplot(fig)
+
+    st.markdown("---")
+
+    st.header("3. Matriz de Correlación")
+    st.write("Identifica las relaciones entre variables numéricas y su impacto en el fraude.")
+
+    # Generar la matriz de correlación solo con variables numéricas
+    numerical_df = df.select_dtypes(include=np.number)
+    
+    # Excluir la columna del target para el cálculo de correlación interna si ya está incluida
+    corr_matrix = numerical_df.corr()
+    
+    fig, ax = plt.subplots(figsize=(10, 8))
+    sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap='coolwarm', ax=ax, linewidths=.5, linecolor='black')
+    ax.set_title('Matriz de Correlación de Variables')
+    st.pyplot(fig)    
+
 
 
 ############################# Pagina 4 ############################## 
