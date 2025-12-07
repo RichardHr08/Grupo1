@@ -307,7 +307,34 @@ def page3():
     sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap='coolwarm', ax=ax, linewidths=.5, linecolor='black')
     ax.set_title('Matriz de Correlación de Variables')
     st.pyplot(fig)
-    #  <- ESTABA AQUÍ Y LO COMENTO    
+    #  <- ESTABA AQUÍ Y LO COMENTO   
+
+# --- 6. DIAGRAMA DE PARES (PAIRPLOT) ---
+    st.header("6. Relación Bivariada (Pairplot) 📊")
+    st.write("El **Diagrama de Pares** muestra las distribuciones y relaciones entre las variables clave. La clase **Fraude (Rojo)** ayuda a identificar si existe alguna **separación lineal**.")
+
+    # Variables que se ven en la imagen de ejemplo:
+    features_subset = ['Transaction_Amount', 'Account_Balance', 'IP_Address_Flag', 
+                       'Previous_Fraudulent_Activity', 'Daily_Transaction_Count', 'Fraud_Label']
+
+    df_pairplot = df[features_subset]
+
+    # Creamos el Pairplot
+    try:
+        # Usamos hue='Fraud_Label' para colorear por la clase objetivo
+        fig_pairplot = sns.pairplot(
+            df_pairplot, 
+            hue='Fraud_Label', 
+            diag_kind='kde', # Muestra la densidad en la diagonal
+            palette={0: 'green', 1: 'red'} # Definimos los colores Fraude y No Fraude
+        )
+        plt.suptitle("Relación Bivariada y Distribución (Fraude vs. No Fraude)", y=1.02)
+        
+        # Mostramos el gráfico
+        st.pyplot(fig_pairplot)
+        
+    except Exception as e:
+        st.warning(f"No se pudo generar el Diagrama de Pares. Asegúrate de tener las columnas correctas. (Excepción: {e})")
 
 def page4():
     st.title("Modelos de Machine Learning 🤖")
