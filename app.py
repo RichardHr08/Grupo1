@@ -1,18 +1,6 @@
 import streamlit as st
 import os
 
-# --- FUNCIÓN DE CARGA DE DATOS --- (¡Asegúrate de que esté aquí!)
-@st.cache_data
-def load_data():
-    """Carga el dataset desde GitHub y lo almacena en caché."""
-    # Nota: Usa la ruta completa del archivo que funciona en tu GitHub
-    DATA_URL = "https://raw.githubusercontent.com/bssanchezlopez/Grupo_1/refs/heads/main/synthetic_fraud_dataset.csv" 
-    try:
-        df = pd.read_csv(DATA_URL)
-        return df
-    except Exception as e:
-        st.error(f"Error al cargar el dataset desde GitHub: {e}")
-        return pd.DataFrame()
 
 
 ############################# CONFIGURACIÓN INICIAL ##############################
