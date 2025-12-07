@@ -170,12 +170,18 @@ def page3():
 
 def page4():
   st.title("Pendiente")
+
+############################# Pagina 5 ############################## 
+
+def page4():
+  st.title("Pendiente")
   
 page_names_to_funcs = {
   "Introducción": page1,
   "Timelime": page2,
-  "Modelos": page3,
-  "Modelos": page4
+  "EDA": page3,
+  "Modelos": page4,
+  "Modelos": page5
   }
 
   
