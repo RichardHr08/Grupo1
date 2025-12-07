@@ -229,7 +229,15 @@ def page3():
     sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap='coolwarm', ax=ax, linewidths=.5, linecolor='black')
     ax.set_title('Matriz de Correlación de Variables')
     st.pyplot(fig)
+#####################
+st.header("4. Visualización de Relaciones Bivariadas (Pairplot)")
+    st.write("El diagrama de pares muestra las distribuciones y relaciones entre las variables, destacando si la clase Fraude (naranja/rojo) se separa.")
 
+    # Llamamos a la función para crear el pairplot
+    pairplot_fig = create_pairplot(df)
+    
+    # Mostramos el gráfico en Streamlit
+    st.pyplot(pairplot_fig)
 
 def page4():
     st.title("Modelos de Machine Learning 🤖")
