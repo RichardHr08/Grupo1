@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
+import joblib
 import pickle # Necesario para cargar el archivo .pkl
 import lightgbm as lgb # Necesario para que el modelo cargado funcione
 # Si usas scikit-learn para transformaciones, también impórtalo:
