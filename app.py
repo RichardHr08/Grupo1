@@ -51,7 +51,7 @@ def load_model():
         
         # En un despliegue de Streamlit Cloud, el archivo debe estar en el repositorio.
         with open(model_path, 'rb') as file:
-            model = pickle.load(file)
+            model = joblib.load(file)
         
         return model
         
