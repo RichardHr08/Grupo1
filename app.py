@@ -382,7 +382,7 @@ def page3():
 
 
 def page4():
-    st.title("Modelos de Machine Learning 🤖 | Predicción de Fraude")
+    st.title("Modelo de Machine Learning LightGBM 🤖 | Predicción de Fraude")
     st.markdown("---")
     
     # Cargar el modelo
@@ -533,7 +533,7 @@ page_names_to_funcs = {
     "Introducción": page1,
     "Timelime": page2,
     "EDA": page3, # Aquí se cargará la página con el EDA corregido
-    "Modelos": page4
+    "Modelo": page4
 }
 
 selected_page = st.sidebar.selectbox("Selecciona una Sección", page_names_to_funcs.keys())
