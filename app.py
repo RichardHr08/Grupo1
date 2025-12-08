@@ -1,31 +1,66 @@
+
 import streamlit as st
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
+import pickle # Necesario para cargar el archivo .pkl
+import lightgbm as lgb # Necesario para que el modelo cargado funcione
+# Si usas scikit-learn para transformaciones, también impórtalo:
+# from sklearn.preprocessing import StandardScaler 
 
 # Configurar el estilo de gráficos para un mejor look en Streamlit
 sns.set_style("whitegrid")
-# Aumentar la resolución para mejor calidad de imagen en la web
-plt.rcParams['figure.dpi'] = 150 
+plt.rcParams['figure.dpi'] = 150
+
+
 
 
 # ---------------------------------------------
-# 1. FUNCIÓN DE CARGA DE DATOS (Solución del NameError)
+# 1. FUNCIÓN DE CARGA DE DATOS (Se mantiene)
 # ---------------------------------------------
 @st.cache_data
 def load_data():
     """Carga el dataset desde GitHub y lo almacena en caché."""
     DATA_URL = "https://raw.githubusercontent.com/bssanchezlopez/Grupo_1/refs/heads/main/synthetic_fraud_dataset.csv"
     try:
-        # Aquí se carga la información que proporcionaste
         df = pd.read_csv(DATA_URL)
         return df
     except Exception as e:
-        # Esto ayuda a depurar si la URL o el archivo falla
         st.error(f"Error al cargar el dataset desde GitHub. Verifica la URL: {e}")
         return pd.DataFrame() 
+
+# ---------------------------------------------
+# 2. FUNCIÓN DE CARGA DEL MODELO (NUEVA)
+# ---------------------------------------------
+@st.cache_resource # Usar st.cache_resource para objetos grandes como modelos
+def load_model():
+    """Carga el modelo LGBMClassifier.pkl desde GitHub o localmente."""
+    # RUTA DONDE SE ENCUENTRA TU MODELO EN EL REPOSITORIO DE GITHUB
+    MODEL_URL = "https://raw.githubusercontent.com/bssanchezlopez/Grupo_1/main/modelo_LGBMClassifier.pkl"
+    
+    try:
+        # Intenta cargar el modelo directamente desde la URL (si es compatible)
+        # O MEJOR, asegúrate de que el modelo esté en la misma carpeta o usa un script para descargar
+        
+        # --- Estrategia más robusta para Streamlit/GitHub ---
+        # 1. Intenta cargar el archivo localmente si está presente (para entorno Streamlit Cloud)
+        model_path = 'modelo_LGBMClassifier.pkl'
+        
+        # En un despliegue de Streamlit Cloud, el archivo debe estar en el repositorio.
+        with open(model_path, 'rb') as file:
+            model = pickle.load(file)
+        
+        return model
+        
+    except FileNotFoundError:
+        st.error(f"Error: El archivo '{model_path}' no se encontró en el repositorio.")
+        st.info("Asegúrate de que el archivo 'modelo_LGBMClassifier.pkl' esté subido a la raíz de tu repositorio de GitHub.")
+        return None
+    except Exception as e:
+        st.error(f"Error al cargar el modelo LGBM. Asegúrate de tener importada la librería 'lightgbm'. Detalle: {e}")
+        return None
 
 
 ############################# CONFIGURACIÓN INICIAL ##############################
@@ -341,9 +376,87 @@ def page3():
 
 
 def page4():
-    st.title("Modelos de Machine Learning 🤖")
+    st.title("Modelos de Machine Learning 🤖 | Predicción de Fraude")
     st.markdown("---")
-    st.info("Esta sección será implementada para la fase de modelado y despliegue de los algoritmos de detección de fraude.")
+    
+    # Cargar el modelo
+    model = load_model()
+    
+    if model is None:
+        st.error("No se pudo cargar el modelo de Machine Learning. Revise los errores anteriores.")
+        return
+        
+    st.success("✅ Modelo LightGBM (LGBMClassifier) cargado exitosamente.")
+    st.write("Utiliza el panel de la izquierda para ingresar los datos de la transacción y predecir la probabilidad de fraude.")
+    
+    # -----------------------------------------------------------
+    # 1. OBTENER INPUTS DEL USUARIO (AJUSTA ESTAS COLUMNAS SEGÚN LAS QUE USA TU MODELO)
+    # -----------------------------------------------------------
+    
+    st.sidebar.header("Parámetros de la Transacción")
+
+    # Ejemplo de entradas numéricas
+    transaction_amount = st.sidebar.number_input("Monto de Transacción", min_value=0.0, max_value=5000.0, value=500.0)
+    account_balance = st.sidebar.number_input("Saldo de Cuenta", min_value=0.0, max_value=100000.0, value=15000.0)
+    daily_count = st.sidebar.slider("Conteo Diario de Transacciones", min_value=1, max_value=50, value=5)
+    
+    # Ejemplo de entradas categóricas/binarias
+    prev_fraud = st.sidebar.selectbox("Actividad Fraudulenta Previa", options=[0, 1], format_func=lambda x: 'Sí' if x == 1 else 'No')
+    ip_flag = st.sidebar.selectbox("Bandera de Dirección IP", options=[0, 1], format_func=lambda x: 'IP de Alto Riesgo' if x == 1 else 'IP Segura')
+    
+    # Crear el DataFrame de entrada (Asegúrate de que los nombres coincidan exactamente con el entrenamiento)
+    # ¡IMPORTANTE! Reemplaza estas con las columnas exactas que usa tu modelo LightGBM.
+    input_data = pd.DataFrame([[
+        transaction_amount, 
+        account_balance, 
+        ip_flag, 
+        prev_fraud, 
+        daily_count
+    ]], 
+    columns=[
+        'Transaction_Amount', 
+        'Account_Balance', 
+        'IP_Address_Flag', 
+        'Previous_Fraudulent_Activity', 
+        'Daily_Transaction_Count'
+    ])
+    
+    # -----------------------------------------------------------
+    # 2. PREDICCIÓN
+    # -----------------------------------------------------------
+    st.subheader("Datos Ingresados")
+    st.dataframe(input_data)
+    
+    if st.button("PREDECIR PROBABILIDAD DE FRAUDE"):
+        
+        try:
+            # Si tu modelo requiere un preprocesamiento (ej. escalado), aplícalo aquí.
+            # pred_input = scaler.transform(input_data) # Si usaste un StandardScaler
+            
+            # Predecir probabilidad (clase 1 = Fraude)
+            prob_fraude = model.predict_proba(input_data)[:, 1][0] * 100
+            
+            st.markdown("---")
+            st.subheader(f"Resultado de la Predicción")
+            
+            # Mostrar resultado basado en la probabilidad
+            if prob_fraude >= 50: # Umbral de decisión
+                st.error(f"❌ ¡ALERTA DE FRAUDE! Probabilidad: {prob_fraude:.2f}%")
+                st.balloons()
+            elif prob_fraude >= 10:
+                 st.warning(f"⚠️ RIESGO MODERADO. Probabilidad: {prob_fraude:.2f}%")
+            else:
+                st.success(f"✅ Transacción SEGURA. Probabilidad de Fraude: {prob_fraude:.2f}%")
+                
+            st.progress(prob_fraude / 100, text=f"Nivel de Riesgo ({prob_fraude:.2f}%)")
+            
+            
+        except Exception as e:
+            st.error(f"Error al realizar la predicción. Asegúrate de que los datos de entrada coincidan con el entrenamiento del modelo. Detalle: {e}")
+
+
+# El resto de tu código (page1, page2, page3, configuración inicial y navegación) se mantiene igual.
+# Asegúrate de reemplazar la definición original de page4 con esta nueva función.
 
 
 ############################# NAVEGACIÓN PRINCIPAL ##############################
