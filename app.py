@@ -106,7 +106,7 @@ def page1():
 
 
     st.markdown("""
-    Transformar la seguridad financiera de reactiva a predictiva. Utilizamos el poder del algoritmo LightGBM para analizar 11 features clave de cada transacción —incluyendo monto, tipo y comportamiento semanal—, identificando y señalizando operaciones fraudulentas con alta precisión y en tiempo real, antes de que el daño ocurra.
+    Transformar la seguridad financiera de reactiva a predictiva. Utilizamos el poder del algoritmo LightGBM para analizar 11 features clave de cada transacción incluyendo monto, tipo y comportamiento semanal, identificando y señalizando operaciones fraudulentas con alta precisión y en tiempo real, antes de que el daño ocurra.
     """)
     
 
