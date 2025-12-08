@@ -376,6 +376,7 @@ def page3():
     st.write("Para el procesamiento de los datos la columna Timestamp se debe convertir en tipo de datos fecha ademas los tipo object en numerico de ser necesario.")
 
 
+
 def page4():
     st.title("Modelos de Machine Learning 🤖 | Predicción de Fraude")
     st.markdown("---")
@@ -388,42 +389,105 @@ def page4():
         return
         
     st.success("✅ Modelo LightGBM (LGBMClassifier) cargado exitosamente.")
-    st.write("Utiliza el panel de la izquierda para ingresar los datos de la transacción y predecir la probabilidad de fraude.")
+    st.write("Utilice el panel de la izquierda para ingresar las **11 features** de la transacción.")
     
     # -----------------------------------------------------------
-    # 1. OBTENER INPUTS DEL USUARIO (AJUSTA ESTAS COLUMNAS SEGÚN LAS QUE USA TU MODELO)
+    # 1. OBTENER INPUTS DEL USUARIO (ALINEADOS CON LAS 11 FEATURES)
     # -----------------------------------------------------------
     
-    st.sidebar.header("Parámetros de la Transacción")
+    st.sidebar.header("Parámetros de la Transacción (11 Features)")
+    
+    # --- Columna 1, 3, 6, 7, 8, 9, 10 (Numéricas o Sliders) ---
+    st.sidebar.subheader("Valores Financieros y Contextuales")
+    
+    # 1. Transaction_Amount
+    transaction_amount = st.sidebar.number_input("1. Monto de Transacción", min_value=0.0, max_value=5000.0, value=500.0, key='ta')
+    
+    # 3. Account_Balance
+    account_balance = st.sidebar.number_input("3. Saldo de Cuenta", min_value=0.0, max_value=100000.0, value=15000.0, key='ab')
+    
+    # 6. Daily_Transaction_Count
+    daily_count = st.sidebar.slider("6. Conteo Diario Transacciones", min_value=1, max_value=50, value=5, key='dc')
+    
+    # 7. Avg_Transaction_Amount_7d
+    avg_amount_7d = st.sidebar.number_input("7. Monto Prom. (7 días)", min_value=0.0, max_value=1000.0, value=450.0, key='a7d')
+    
+    # 8. Failed_Transaction_Count_7d
+    failed_count_7d = st.sidebar.slider("8. Fallos Trans. (7 días)", min_value=0, max_value=10, value=0, key='f7d')
+    
+    # 9. Card_Age (asumiendo en días o meses, ajusta la escala si es necesario)
+    card_age = st.sidebar.number_input("9. Antigüedad de la Tarjeta (días)", min_value=1, max_value=3000, value=365, key='ca')
+    
+    # 10. Transaction_Distance
+    transaction_distance = st.sidebar.number_input("10. Distancia Transacción (km)", min_value=0.0, max_value=5000.0, value=10.0, key='td')
+    
+    # --- Columna 2 (Categórica/One-Hot) ---
+    st.sidebar.subheader("Tipo de Transacción (Feature 2)")
+    # Asume que Transaction_Type fue convertido a One-Hot/Dummy. 
+    # Aquí simulamos la selección de un tipo y la conversión a binario (OHE).
+    # **DEBES REEMPLAZAR ESTO CON LAS COLUMNAS OHE REALES SI TU MODELO LAS USA.**
+    
+    # Si Transaction_Type se convierte en 3 columnas: [Type_A, Type_B, Type_C]
+    # Y se entrena el modelo con estas 13 columnas (11 de la imagen + 2 OHE):
+    
+    # --- Si Transaction_Type es una variable codificada (Label Encoding):
+    transaction_type = st.sidebar.selectbox("2. Tipo de Transacción (Codificado)", options=[1, 2, 3, 4], key='tt')
+    
+    # --- Si Transaction_Type NO fue codificada, y es string, debemos convertirla.
+    # Si Transaction_Type es string, LightGBM puede manejarlo, pero si la guardaste como número, usa el código de arriba.
+    
+    
+    # --- Columna 4, 5, 11 (Binarias) ---
+    st.sidebar.subheader("Indicadores Binarios")
+    
+    # 4. IP_Address_Flag
+    ip_flag = st.sidebar.selectbox("4. Bandera IP (Riesgo)", options=[0, 1], format_func=lambda x: 'Alto Riesgo (1)' if x == 1 else 'Segura (0)', key='ipf')
+    
+    # 5. Previous_Fraudulent_Activity
+    prev_fraud = st.sidebar.selectbox("5. Fraude Previo", options=[0, 1], format_func=lambda x: 'Sí (1)' if x == 1 else 'No (0)', key='pfa')
+    
+    # 11. Is_Weekend
+    is_weekend = st.sidebar.selectbox("11. Es Fin de Semana", options=[0, 1], format_func=lambda x: 'Sí (1)' if x == 1 else 'No (0)', key='iw')
+    
+    
+    # -----------------------------------------------------------
+    # 2. CREACIÓN DEL DATAFRAME DE 11 FEATURES (¡CRÍTICO!)
+    # -----------------------------------------------------------
 
-    # Ejemplo de entradas numéricas
-    transaction_amount = st.sidebar.number_input("Monto de Transacción", min_value=0.0, max_value=5000.0, value=500.0)
-    account_balance = st.sidebar.number_input("Saldo de Cuenta", min_value=0.0, max_value=100000.0, value=15000.0)
-    daily_count = st.sidebar.slider("Conteo Diario de Transacciones", min_value=1, max_value=50, value=5)
-    
-    # Ejemplo de entradas categóricas/binarias
-    prev_fraud = st.sidebar.selectbox("Actividad Fraudulenta Previa", options=[0, 1], format_func=lambda x: 'Sí' if x == 1 else 'No')
-    ip_flag = st.sidebar.selectbox("Bandera de Dirección IP", options=[0, 1], format_func=lambda x: 'IP de Alto Riesgo' if x == 1 else 'IP Segura')
-    
-    # Crear el DataFrame de entrada (Asegúrate de que los nombres coincidan exactamente con el entrenamiento)
-    # ¡IMPORTANTE! Reemplaza estas con las columnas exactas que usa tu modelo LightGBM.
-    input_data = pd.DataFrame([[
-        transaction_amount, 
-        account_balance, 
-        ip_flag, 
-        prev_fraud, 
-        daily_count
-    ]], 
-    columns=[
+    # Nombres de columna en el ORDEN EXACTO del entrenamiento (¡DEBE COINCIDIR CON TU IMAGEN!)
+    COLUMNS = [
         'Transaction_Amount', 
+        'Transaction_Type', 
         'Account_Balance', 
         'IP_Address_Flag', 
         'Previous_Fraudulent_Activity', 
-        'Daily_Transaction_Count'
-    ])
+        'Daily_Transaction_Count', 
+        'Avg_Transaction_Amount_7d', 
+        'Failed_Transaction_Count_7d', 
+        'Card_Age', 
+        'Transaction_Distance', 
+        'Is_Weekend' 
+    ] # Total: 11
+    
+    # Crear la lista de valores en el ORDEN EXACTO
+    values = [
+        transaction_amount, 
+        transaction_type, 
+        account_balance, 
+        ip_flag, 
+        prev_fraud, 
+        daily_count, 
+        avg_amount_7d, 
+        failed_count_7d, 
+        card_age, 
+        transaction_distance, 
+        is_weekend
+    ] # Total: 11
+
+    input_data = pd.DataFrame([values], columns=COLUMNS)
     
     # -----------------------------------------------------------
-    # 2. PREDICCIÓN
+    # 3. PREDICCIÓN
     # -----------------------------------------------------------
     st.subheader("Datos Ingresados")
     st.dataframe(input_data)
@@ -431,9 +495,6 @@ def page4():
     if st.button("PREDECIR PROBABILIDAD DE FRAUDE"):
         
         try:
-            # Si tu modelo requiere un preprocesamiento (ej. escalado), aplícalo aquí.
-            # pred_input = scaler.transform(input_data) # Si usaste un StandardScaler
-            
             # Predecir probabilidad (clase 1 = Fraude)
             prob_fraude = model.predict_proba(input_data)[:, 1][0] * 100
             
@@ -441,7 +502,7 @@ def page4():
             st.subheader(f"Resultado de la Predicción")
             
             # Mostrar resultado basado en la probabilidad
-            if prob_fraude >= 50: # Umbral de decisión
+            if prob_fraude >= 50: # Umbral de decisión (ajústalo si es necesario)
                 st.error(f"❌ ¡ALERTA DE FRAUDE! Probabilidad: {prob_fraude:.2f}%")
                 st.balloons()
             elif prob_fraude >= 10:
@@ -453,7 +514,9 @@ def page4():
             
             
         except Exception as e:
-            st.error(f"Error al realizar la predicción. Asegúrate de que los datos de entrada coincidan con el entrenamiento del modelo. Detalle: {e}")
+            # Ahora debería funcionar. Si el error persiste, significa que la codificación/tipo de dato
+            # de alguna columna (ej. Transaction_Type) sigue siendo el problema.
+            st.error(f"Error al realizar la predicción. Detalle: {e}")
 
 
 # El resto de tu código (page1, page2, page3, configuración inicial y navegación) se mantiene igual.
