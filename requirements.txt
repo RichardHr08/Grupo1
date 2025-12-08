@@ -5,3 +5,4 @@ matplotlib
 seaborn
 lightgbm
 joblib
+scikit-learn
