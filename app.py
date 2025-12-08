@@ -382,7 +382,7 @@ def page3():
 
 
 def page4():
-    st.title("Modelo de Machine Learning LightGBM 🤖 | Predicción de Fraude")
+    st.title("Modelo de ML LightGBM 🤖 | Predicción de Fraude")
     st.markdown("---")
     
     # Cargar el modelo
