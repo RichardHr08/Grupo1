@@ -97,14 +97,18 @@ def page1():
     st.markdown("---")
     st.write("La Frontera Digital de la Seguridad Financiera")
     st.markdown("""
-    En la era del comercio electrónico y la banca digital, la **Detección de Operaciones Fraudulentas** se ha convertido en una disciplina crítica para proteger tanto a las instituciones financieras 
-    como a los consumidores.
-    Este proyecto explora la evolución de los sistemas antifraude, desde los primeros modelos 
-    estadísticos basados en reglas fijas hasta la aplicación actual de la Inteligencia Artificial 
-    y el Aprendizaje Profundo (*Deep Learning*).
-    Analizaremos cómo los hitos tecnológicos han redefinido la batalla contra el crimen financiero, 
-    permitiendo la identificación de patrones de riesgo sutiles y la prevención en tiempo real.
+    En el ecosistema financiero actual, la rapidez de las transacciones digitales exige sistemas de seguridad capaces de **identificar y neutralizar el fraude en tiempo real**. 
+    
+    Este proyecto se enfoca en la aplicación práctica de la **Inteligencia Artificial** y el **Aprendizaje Automático (Machine Learning)**, específicamente utilizando el algoritmo **LightGBM**, para superar las limitaciones de los modelos basados en reglas fijas.
+    
+    A través de un **Análisis Exploratorio de Datos (EDA)** detallado sobre un dataset de transacciones sintéticas, examinamos patrones clave de riesgo, desbalance de clases y la relación entre **11 *features*** críticas (como el monto, la antigüedad de la tarjeta, el tipo de transacción y el historial de fallos). Finalmente, implementamos un modelo predictivo robusto y de alto rendimiento que clasifica la probabilidad de fraude, sirviendo como una herramienta proactiva y esencial para la seguridad de la banca digital.
     """)
+
+
+    st.markdown("""
+    Transformar la seguridad financiera de reactiva a predictiva. Utilizamos el poder del algoritmo LightGBM para analizar 11 features clave de cada transacción —incluyendo monto, tipo y comportamiento semanal—, identificando y señalizando operaciones fraudulentas con alta precisión y en tiempo real, antes de que el daño ocurra.
+    """)
+    
 
 
 def page2():
