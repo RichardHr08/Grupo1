@@ -101,12 +101,12 @@ def page1():
     
     Este proyecto se enfoca en la aplicación práctica de la **Inteligencia Artificial** y el **Aprendizaje Automático (Machine Learning)**, específicamente utilizando el algoritmo **LightGBM**, para superar las limitaciones de los modelos basados en reglas fijas.
     
-    A través de un **Análisis Exploratorio de Datos (EDA)** detallado sobre un dataset de transacciones sintéticas, examinamos patrones clave de riesgo, desbalance de clases y la relación entre **11 *features*** críticas (como el monto, la antigüedad de la tarjeta, el tipo de transacción y el historial de fallos). Finalmente, implementamos un modelo predictivo robusto y de alto rendimiento que clasifica la probabilidad de fraude, sirviendo como una herramienta proactiva y esencial para la seguridad de la banca digital.
+    A través de un **Análisis Exploratorio de Datos (EDA)** detallado sobre un dataset de transacciones sintéticas, examinamos patrones clave de riesgo, desbalance de clases y la relación entre **11 *features*** críticas. Finalmente, implementamos un modelo predictivo robusto y de alto rendimiento que clasifica la probabilidad de fraude, sirviendo como una herramienta proactiva y esencial para la seguridad de la banca digital.
     """)
 
 
     st.markdown("""
-    Transformar la seguridad financiera de reactiva a predictiva. Utilizamos el poder del algoritmo LightGBM para analizar 11 features clave de cada transacción incluyendo monto, tipo y comportamiento semanal, identificando y señalizando operaciones fraudulentas con alta precisión y en tiempo real, antes de que el daño ocurra.
+    La problemática que buscamos resolver es la incapacidad de los sistemas antifraude basados en reglas fijas para identificar de manera eficiente y escalable las transacciones fraudulentas en el entorno digital, lo que resulta en altas pérdidas financieras y una mala experiencia para el cliente.
     """)
     
 
